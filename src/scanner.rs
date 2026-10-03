@@ -43,34 +43,77 @@ impl Scanner {
     }
 
     fn scan_token(&mut self) {
-        let character = self.advance();
+    let c = self.advance();
 
-        match character {
-            '(' => self.add(TokenType::LParen),
-            ')' => self.add(TokenType::RParen),
-            '{' => self.add(TokenType::LBrace),
-            '}' => self.add(TokenType::RBrace),
-            ',' => self.add(TokenType::Comma),
-            ';' => self.add(TokenType::Semicolon),
+    match c {
+        '(' => self.add(TokenType::LParen),
+        ')' => self.add(TokenType::RParen),
+        '{' => self.add(TokenType::LBrace),
+        '}' => self.add(TokenType::RBrace),
+        ',' => self.add(TokenType::Comma),
+        ';' => self.add(TokenType::Semicolon),
 
-            '+' => self.add(TokenType::Plus),
-            '-' => self.add(TokenType::Minus),
-            '*' => self.add(TokenType::Star),
+        '+' => self.add(TokenType::Plus),
+        '-' => self.add(TokenType::Minus),
+        '*' => self.add(TokenType::Star),
 
-           ' ' | '\t' | '\r' => {}
-
-             '\n' => {
-                self.line += 1;
-            }
-
-            _ => {
-                self.error(
-                    self.line,
-                    "Character is not part of any token.",
-                );
+        '!' => {
+            if self.matches('=') {
+                self.add(TokenType::BangEqual);
+            } else {
+                self.add(TokenType::Bang);
             }
         }
+
+        '=' => {
+            if self.matches('=') {
+                self.add(TokenType::EqualEqual);
+            } else {
+                self.add(TokenType::Equal);
+            }
+        }
+
+        '<' => {
+            if self.matches('=') {
+                self.add(TokenType::LessEqual);
+            } else {
+                self.add(TokenType::Less);
+            }
+        }
+
+        '>' => {
+            if self.matches('=') {
+                self.add(TokenType::GreaterEqual);
+            } else {
+                self.add(TokenType::Greater);
+            }
+        }
+
+        '/' => {
+            if self.matches('/') {
+                while self.peek() != '\n' && !self.at_end() {
+                    self.advance();
+                }
+            } else {
+                self.add(TokenType::Slash);
+            }
+        }
+
+        ' ' | '\t' | '\r' => {}
+
+        '\n' => {
+            self.line += 1;
+        }
+
+        _ => {
+            self.error(
+                self.line,
+                "Character is not part of any token.",
+            );
+        }
     }
+}
+ 
 
     fn string(&mut self) {
         // TODO(you): scan a string literal. A string may span lines, and an unterminated one is
