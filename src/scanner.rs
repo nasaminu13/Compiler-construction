@@ -43,9 +43,9 @@ impl Scanner {
     }
 
     fn scan_token(&mut self) {
-    let c = self.advance();
+    let character = self.advance();
 
-    match c {
+    match character {
         '(' => self.add(TokenType::LParen),
         ')' => self.add(TokenType::RParen),
         '{' => self.add(TokenType::LBrace),
@@ -104,6 +104,11 @@ impl Scanner {
         '\n' => {
             self.line += 1;
         }
+        
+        _ if character.is_ascii_digit() => {
+            self.number();
+        }
+
 
         _ => {
             self.error(
@@ -122,10 +127,20 @@ impl Scanner {
     }
 
     fn number(&mut self) {
-        // TODO(you): scan a number literal: digits, then a fractional part only when a digit
-        //            follows the dot (1.4).
-        todo!("number")
+    while self.peek().is_ascii_digit() {
+        self.advance();
     }
+
+    if self.peek() == '.' && self.peek_next().is_ascii_digit() {
+        self.advance();
+
+        while self.peek().is_ascii_digit() {
+            self.advance();
+        }
+    }
+
+    self.add(TokenType::Number);
+}
 
     fn identifier(&mut self) {
         // TODO(you): scan an identifier, then decide whether it is a keyword; keyword() in
