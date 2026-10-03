@@ -43,10 +43,33 @@ impl Scanner {
     }
 
     fn scan_token(&mut self) {
-        // TODO(you): recognise one token. Spec 1.2 lists every token type, 1.1 covers
-        //            whitespace and comments, and an unrecognised character is 'Character is
-        //            not part of any token.' (5.1).
-        todo!("scan_token")
+        let character = self.advance();
+
+        match character {
+            '(' => self.add(TokenType::LParen),
+            ')' => self.add(TokenType::RParen),
+            '{' => self.add(TokenType::LBrace),
+            '}' => self.add(TokenType::RBrace),
+            ',' => self.add(TokenType::Comma),
+            ';' => self.add(TokenType::Semicolon),
+
+            '+' => self.add(TokenType::Plus),
+            '-' => self.add(TokenType::Minus),
+            '*' => self.add(TokenType::Star),
+
+           ' ' | '\t' | '\r' => {}
+
+             '\n' => {
+                self.line += 1;
+            }
+
+            _ => {
+                self.error(
+                    self.line,
+                    "Character is not part of any token.",
+                );
+            }
+        }
     }
 
     fn string(&mut self) {
