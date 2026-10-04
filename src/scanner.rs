@@ -53,6 +53,8 @@ impl Scanner {
         ',' => self.add(TokenType::Comma),
         ';' => self.add(TokenType::Semicolon),
 
+        '"' => self.string(),
+
         '+' => self.add(TokenType::Plus),
         '-' => self.add(TokenType::Minus),
         '*' => self.add(TokenType::Star),
